@@ -6,10 +6,9 @@ import { RegisterBodyDto, RegisterResDto } from './auth.dto'
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @SerializeOptions({ type: RegisterResDto })
   @Post('register')
-  register(@Body() body: RegisterBodyDto): Promise<any> {
-    console.log(body)
-    return this.authService.register(body)
+  async register(@Body() body: RegisterBodyDto): Promise<any> {
+    const result = await this.authService.register(body)
+    return new RegisterResDto(result)
   }
 }

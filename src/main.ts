@@ -1,9 +1,13 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { UnprocessableEntityException, ValidationError, ValidationPipe } from '@nestjs/common'
+import { LoggingInterceptor } from './shared/interceptor/logging.interceptor'
+import { TransformInterceptor } from './shared/interceptor/transform.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  app.useGlobalInterceptors(new LoggingInterceptor())
+  app.useGlobalInterceptors(new TransformInterceptor())
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // loại bỏ props không có decorator trong DTO
