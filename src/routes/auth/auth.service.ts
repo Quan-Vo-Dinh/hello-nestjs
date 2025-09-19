@@ -59,14 +59,52 @@ export class AuthService {
     ])
 
     const decodedRefreshToken = await this.tokenService.verifyRefreshToken(refreshToken)
-    await this.prismaService.refreshToken.create({
-      data: {
-        token: refreshToken,
-        userId: parseInt(payload.userId),
-        expiresAt: new Date(decodedRefreshToken.exp * 1000), // Convert exp to milliseconds
-      },
+
+    // Use transaction to ensure atomic operation
+    await this.prismaService.$transaction(async (prisma) => {
+      // Delete any existing refresh tokens for this user to prevent accumulation
+      await prisma.refreshToken.deleteMany({
+        where: { userId: parseInt(payload.userId) },
+      })
+
+      await prisma.refreshToken.create({
+        data: {
+          token: refreshToken,
+          userId: parseInt(payload.userId),
+          expiresAt: new Date(decodedRefreshToken.exp * 1000),
+        },
+      })
     })
 
     return { accessToken, refreshToken }
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      // Verify the refresh token
+      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken)
+      const storedToken = await this.prismaService.refreshToken.findUniqueOrThrow({
+        where: { token: refreshToken },
+      })
+
+      if (storedToken.expiresAt < new Date()) {
+        throw new UnauthorizedException('Refresh token has expired')
+      }
+
+      // Generate new tokens
+      const newTokens = await this.generateTokens({ userId: userId.toString() })
+
+      // Delete old refresh token after successfully creating new ones
+      await this.prismaService.refreshToken.delete({
+        where: { token: refreshToken },
+      })
+
+      return newTokens
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new UnauthorizedException('Refresh token has been revoked')
+      }
+      throw new UnauthorizedException('Invalid refresh token')
+    }
   }
 }

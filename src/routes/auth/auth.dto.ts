@@ -1,9 +1,10 @@
 import { Exclude, Expose } from 'class-transformer'
-import { IsEmail, isEmail, IsString, isString } from 'class-validator'
+import { IsEmail, isEmail, IsString, isString, Length } from 'class-validator'
+import { Match } from 'src/shared/decorators/custom-validator.decorator'
 
 export class LoginBodyDto {
   @IsEmail() @IsString() email: string
-  @IsString() password: string
+  @IsString() @Length(6, 20) password: string
 }
 
 export class LoginResDto {
@@ -17,7 +18,7 @@ export class LoginResDto {
 
 export class RegisterBodyDto extends LoginBodyDto {
   @IsString() name: string
-  @IsString() confirmPassword: string
+  @IsString() @Match('password') confirmPassword: string
 }
 
 export class RegisterResDto {
@@ -36,3 +37,9 @@ export class RegisterResDto {
     Object.assign(this, partial)
   }
 }
+
+export class RefreshTokenBodyDto {
+  @IsString() refreshToken: string
+}
+
+export class RefreshTokenResDto extends LoginResDto {}
