@@ -12,6 +12,8 @@ import { AuthService } from './auth.service'
 import {
   LoginBodyDto,
   LoginResDto,
+  LogoutBodyDto,
+  LogoutResDto,
   RefreshTokenBodyDto,
   RefreshTokenResDto,
   RegisterBodyDto,
@@ -23,7 +25,7 @@ import { Public } from 'src/shared/decorators/public.decorator'
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @SerializeOptions({ type: RegisterResDto })
+  @SerializeOptions({ type: RegisterResDto }) // dùng nó khi có @Exclude, @Expose, @Transform
   @Post('register')
   async register(@Body() body: RegisterBodyDto) {
     const result = await this.authService.register(body)
@@ -43,5 +45,13 @@ export class AuthController {
   async refreshToken(@Body() body: RefreshTokenBodyDto) {
     const result = await this.authService.refreshToken(body.refreshToken)
     return new RefreshTokenResDto(result)
+  }
+
+  @SerializeOptions({ type: LogoutResDto })
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Body() body: LogoutBodyDto) {
+    const result = await this.authService.logout(body.refreshToken)
+    return new LogoutResDto(result)
   }
 }

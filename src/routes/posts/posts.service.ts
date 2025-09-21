@@ -8,12 +8,12 @@ import { envConfig } from 'src/shared/config'
 export class PostsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createPostDto: any) {
+  create(userId: number, createPostDto: any) {
     return this.prismaService.post.create({
       data: {
         title: createPostDto.title,
         content: createPostDto.content,
-        authorId: createPostDto.authorId,
+        authorId: Number(userId),
       },
     })
   }

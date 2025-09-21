@@ -1,20 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common'
+import { REQUEST_USER_KEY } from './../../shared/constants/auth.constant'
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common'
 import { PostsService } from './posts.service'
-import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { APIKeyGuard } from 'src/shared/guards/api-key.guard'
-import { AccessTokenGuard } from 'src/shared/guards/access-token.guard'
 import { Auth } from 'src/shared/decorators/auth.decorator'
 import { AuthType, ConditionGuardType } from 'src/shared/constants/auth.constant'
 import { AuthenticationGuard } from 'src/shared/guards/authentication.guard'
+import type { Request } from 'express'
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator'
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Auth([AuthType.Bearer])
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto)
+  create(@Body() body: any, @ActiveUser('userId') userId: number) {
+    return this.postsService.create(userId, body)
   }
 
   // @UseGuards(AccessTokenGuard, APIKeyGuard)

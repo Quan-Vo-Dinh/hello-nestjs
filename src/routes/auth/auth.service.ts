@@ -82,8 +82,9 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     try {
-      // Verify the refresh token
-      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken)
+      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken) // verify token xem có hợp lệ không và lấy userId
+
+      // Tìm token trong database, nếu không có tức đã bị revoke, throw nó ra
       const storedToken = await this.prismaService.refreshToken.findUniqueOrThrow({
         where: { token: refreshToken },
       })
@@ -92,15 +93,40 @@ export class AuthService {
         throw new UnauthorizedException('Refresh token has expired')
       }
 
-      // Generate new tokens
       const newTokens = await this.generateTokens({ userId: userId.toString() })
 
-      // Delete old refresh token after successfully creating new ones
+      // Xóa old refresh token sau khi tạo thành công token mới
       await this.prismaService.refreshToken.delete({
         where: { token: refreshToken },
       })
 
       return newTokens
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new UnauthorizedException('Refresh token has been revoked')
+      }
+      throw new UnauthorizedException('Invalid refresh token')
+    }
+  }
+
+  async logout(refreshToken: string) {
+    try {
+      await this.tokenService.verifyRefreshToken(refreshToken) // verify token xem có hợp lệ không
+
+      // Tìm token trong database, nếu không có tức đã bị revoke, throw nó ra
+      const storedToken = await this.prismaService.refreshToken.findUniqueOrThrow({
+        where: { token: refreshToken },
+      })
+
+      if (storedToken.expiresAt < new Date()) {
+        throw new UnauthorizedException('Refresh token has expired')
+      }
+
+      // Xóa refresh token khỏi database để logout
+      await this.prismaService.refreshToken.delete({
+        where: { token: refreshToken },
+      })
+      return { message: 'Logged out successfully' }
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new UnauthorizedException('Refresh token has been revoked')
