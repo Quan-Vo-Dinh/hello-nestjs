@@ -1,3 +1,4 @@
+import { AuthenticationGuard } from './shared/guards/authentication.guard'
 import { ClassSerializerInterceptor, Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
@@ -15,10 +16,6 @@ import { AccessTokenGuard } from './shared/guards/access-token.guard'
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AccessTokenGuard,
     },
   ],
 })

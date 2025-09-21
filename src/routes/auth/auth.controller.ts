@@ -23,7 +23,6 @@ import { Public } from 'src/shared/decorators/public.decorator'
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @SerializeOptions({ type: RegisterResDto })
   @Post('register')
   async register(@Body() body: RegisterBodyDto) {
@@ -31,7 +30,6 @@ export class AuthController {
     return new RegisterResDto(result)
   }
 
-  @Public()
   @SerializeOptions({ type: LoginResDto })
   @Post('login')
   async login(@Body() body: LoginBodyDto) {
@@ -39,7 +37,6 @@ export class AuthController {
     return new LoginResDto(result)
   }
 
-  @Public()
   @SerializeOptions({ type: RefreshTokenResDto })
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)

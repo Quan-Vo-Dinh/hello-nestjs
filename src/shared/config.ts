@@ -19,6 +19,12 @@ class ConfigSchema {
   REFRESH_TOKEN_EXPIRATION: string
   @IsString()
   ACCESS_TOKEN_EXPIRATION: string
+  @IsString()
+  SECRET_API_KEY: string
+  @IsString()
+  SALT_ROUNDS: string
+  @IsString()
+  PORT: string
 }
 
 // Note: dùng class-transformer để convert plain object to class instance

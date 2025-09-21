@@ -1,7 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common'
 import { PostsService } from './posts.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
+import { APIKeyGuard } from 'src/shared/guards/api-key.guard'
+import { AccessTokenGuard } from 'src/shared/guards/access-token.guard'
+import { Auth } from 'src/shared/decorators/auth.decorator'
+import { AuthType, ConditionGuardType } from 'src/shared/constants/auth.constant'
+import { AuthenticationGuard } from 'src/shared/guards/authentication.guard'
 
 @Controller('posts')
 export class PostsController {
@@ -12,6 +17,9 @@ export class PostsController {
     return this.postsService.create(createPostDto)
   }
 
+  // @UseGuards(AccessTokenGuard, APIKeyGuard)
+  @Auth([AuthType.Bearer, AuthType.ApiKey], { conditions: ConditionGuardType.OR })
+  @UseGuards(AuthenticationGuard)
   @Get()
   findAll() {
     return this.postsService.findAll()
