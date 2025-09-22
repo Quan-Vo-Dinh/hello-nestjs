@@ -80,7 +80,7 @@ jobs:
           du -sh dist/
           ls -la dist/
 
-  # Job 3: Basic security check  
+  # Job 3: Basic security check
   security:
     name: 🔐 Security Check
     runs-on: ubuntu-latest
