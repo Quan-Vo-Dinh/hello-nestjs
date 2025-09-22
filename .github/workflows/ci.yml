@@ -34,6 +34,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🔧 Setup environment for testing
+        run: cp .env.example .env
+
       - name: 🏗️ Build application
         run: npm run build
 
@@ -71,6 +74,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
+      - name: 🔧 Setup environment for build
+        run: cp .env.example .env
+
       - name: 🏗️ Build for production
         run: npm run build
 
@@ -97,6 +103,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🔍 Run security audit
+      - name: � Setup environment for security check
+        run: cp .env.example .env
+
+      - name: �🔍 Run security audit
         run: npm audit --audit-level=high
         continue-on-error: true # Không fail CI nếu có vulnerabilities nhẹ

@@ -54,7 +54,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🔍 Run ESLint
+      - name: � Setup environment for linting
+        run: cp .env.example .env
+
+      - name: �🔍 Run ESLint
         run: npm run lint:check
 
       - name: 🎨 Check Prettier formatting
@@ -77,7 +80,13 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: 🔍 Run security audit
+      - name: � Install dependencies
+        run: npm ci
+
+      - name: 🔧 Setup environment for security audit
+        run: cp .env.example .env
+
+      - name: �🔍 Run security audit
         run: npm audit --audit-level=high
 
       - name: 📦 Check for outdated packages
