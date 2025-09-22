@@ -1,12 +1,11 @@
-import { REQUEST_USER_KEY } from './../../shared/constants/auth.constant'
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { PostsService } from './posts.service'
-import { UpdatePostDto } from './dto/update-post.dto'
+import { UpdatePostBodyDto, UpdatePostDto } from './dto/update-post.dto'
 import { Auth } from 'src/shared/decorators/auth.decorator'
-import { AuthType, ConditionGuardType } from 'src/shared/constants/auth.constant'
-import { AuthenticationGuard } from 'src/shared/guards/authentication.guard'
-import type { Request } from 'express'
+import { AuthType } from 'src/shared/constants/auth.constant'
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator'
+import { GetPostDto } from './dto/get-post.dto'
+import { CreatePostBodyDto, CreatePostDto } from './dto/create-post.dto'
 
 @Controller('posts')
 export class PostsController {
@@ -14,30 +13,46 @@ export class PostsController {
 
   @Auth([AuthType.Bearer])
   @Post()
-  create(@Body() body: any, @ActiveUser('userId') userId: number) {
-    return this.postsService.create(userId, body)
+  async create(@Body() body: CreatePostBodyDto, @ActiveUser('userId') userId: number) {
+    const result = await this.postsService.createPost(userId, body)
+    return new CreatePostDto(result)
   }
 
-  // @UseGuards(AccessTokenGuard, APIKeyGuard)
-  @Auth([AuthType.Bearer, AuthType.ApiKey], { conditions: ConditionGuardType.OR })
-  @UseGuards(AuthenticationGuard)
+  @Auth([AuthType.Bearer])
   @Get()
-  findAll() {
-    return this.postsService.findAll()
+  async getPosts(@ActiveUser('userId') userId: number) {
+    const result = await this.postsService.getPosts(userId)
+    return result.map((post) => new GetPostDto(post))
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id)
+  async findOne(@Param('id') id: string) {
+    const result = await this.postsService.getPost(+id)
+    return new GetPostDto(result)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto)
+  @Auth([AuthType.Bearer])
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostBodyDto,
+    @ActiveUser('userId') userId: number,
+  ) {
+    const serviceResult = await this.postsService.updatePost({
+      postId: +id,
+      userId: userId,
+      body: updatePostDto,
+    })
+    return new UpdatePostDto(serviceResult)
   }
 
+  @Auth([AuthType.Bearer])
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id)
+  async remove(@Param('id') id: string, @ActiveUser('userId') userId: number) {
+    await this.postsService.deletePost({
+      postId: +id,
+      userId: userId,
+    })
+    return { message: 'Post deleted successfully' }
   }
 }

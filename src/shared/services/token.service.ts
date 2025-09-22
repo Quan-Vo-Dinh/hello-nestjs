@@ -23,15 +23,29 @@ export class TokenService {
     })
   }
 
-  verifyAccessToken(token: string): Promise<TokenPayload> {
-    return this.jwtService.verifyAsync(token, {
+  async verifyAccessToken(token: string): Promise<TokenPayload> {
+    const rawPayload = await this.jwtService.verifyAsync(token, {
       secret: envConfig.ACCESS_TOKEN_SECRET,
     })
+
+    // Parse để đảm bảo đúng kiểu dữ liệu
+    return {
+      userId: Number(rawPayload.userId),
+      exp: Number(rawPayload.exp),
+      iat: Number(rawPayload.iat),
+    }
   }
 
-  verifyRefreshToken(token: string): Promise<TokenPayload> {
-    return this.jwtService.verifyAsync(token, {
+  async verifyRefreshToken(token: string): Promise<TokenPayload> {
+    const rawPayload = await this.jwtService.verifyAsync(token, {
       secret: envConfig.REFRESH_TOKEN_SECRET,
     })
+
+    // Parse để đảm bảo đúng kiểu dữ liệu
+    return {
+      userId: Number(rawPayload.userId),
+      exp: Number(rawPayload.exp),
+      iat: Number(rawPayload.iat),
+    }
   }
 }
