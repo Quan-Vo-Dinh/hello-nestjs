@@ -1,0 +1,84 @@
+name: 🔍 Code Quality & Linting
+
+# Trigger workflow khi:
+on:
+  push:
+    branches: [main, master, develop] # Chạy khi push vào main branches
+  pull_request:
+    branches: [main, master, develop] # Chạy khi tạo/update PR
+  workflow_dispatch: # Cho phép chạy manual từ GitHub UI
+
+# Đảm bảo chỉ 1 workflow chạy cùng lúc cho cùng 1 branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Lint commit messages (chỉ cho PR)
+  lint-commit:
+    name: 📝 Lint Commit Messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 🛒 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch toàn bộ history để check commits
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Validate commit messages
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  # Job 2: Code linting & formatting
+  lint-code:
+    name: 🧹 Lint & Format Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛒 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint:check
+
+      - name: 🎨 Check Prettier formatting
+        run: npm run format:check
+
+      - name: 🏗️ Check TypeScript compilation
+        run: npm run build
+
+  # Job 3: Dependency security check
+  security-audit:
+    name: 🔐 Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛒 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 🔍 Run security audit
+        run: npm audit --audit-level=high
+
+      - name: 📦 Check for outdated packages
+        run: npm outdated || true # Không fail nếu có packages cũ
