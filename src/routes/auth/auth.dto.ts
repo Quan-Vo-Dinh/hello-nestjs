@@ -1,5 +1,5 @@
-import { Exclude, Expose } from 'class-transformer'
-import { IsEmail, isEmail, IsString, isString, Length } from 'class-validator'
+import { Exclude } from 'class-transformer'
+import { IsEmail, IsString, Length } from 'class-validator'
 import { Match } from 'src/shared/decorators/custom-validator.decorator'
 
 export class LoginBodyDto {

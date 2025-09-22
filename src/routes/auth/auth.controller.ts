@@ -1,13 +1,4 @@
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  SerializeOptions,
-  UseInterceptors,
-} from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post, SerializeOptions } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import {
   LoginBodyDto,
@@ -19,7 +10,6 @@ import {
   RegisterBodyDto,
   RegisterResDto,
 } from './auth.dto'
-import { Public } from 'src/shared/decorators/public.decorator'
 
 @Controller('auth')
 export class AuthController {

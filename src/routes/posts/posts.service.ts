@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common'
 import { CreatePostBodyDto } from './dto/create-post.dto'
-import { UpdatePostBodyDto, UpdatePostDto } from './dto/update-post.dto'
+import { UpdatePostBodyDto } from './dto/update-post.dto'
 import { PrismaService } from 'src/shared/services/prisma.service'
-import { envConfig } from 'src/shared/config'
 import { isRecordNotFoundError, isUniqueConstraintError } from 'src/shared/helpers'
 
 @Injectable()
@@ -21,7 +20,7 @@ export class PostsService {
           },
         },
       })
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException('Failed to retrieve posts')
     }
   }
@@ -81,7 +80,7 @@ export class PostsService {
           },
         },
       })
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException('Failed to retrieve all posts')
     }
   }

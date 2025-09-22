@@ -1,12 +1,10 @@
-import { AuthenticationGuard } from './shared/guards/authentication.guard'
 import { ClassSerializerInterceptor, Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { SharedModule } from './shared/shared.module'
 import { PostsModule } from './routes/posts/posts.module'
 import { AuthModule } from './routes/auth/auth.module'
-import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core'
-import { AccessTokenGuard } from './shared/guards/access-token.guard'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 @Module({
   imports: [SharedModule, PostsModule, AuthModule],

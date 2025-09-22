@@ -1,5 +1,4 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common'
-import { envConfig } from '../config'
 import { Reflector } from '@nestjs/core'
 import { AUTH_TYPE_KEY, AuthMetadataPayload } from '../decorators/auth.decorator'
 import { AuthType, ConditionGuardType } from '../constants/auth.constant'

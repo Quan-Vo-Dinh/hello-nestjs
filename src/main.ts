@@ -3,7 +3,6 @@ import { AppModule } from './app.module'
 import { UnprocessableEntityException, ValidationError, ValidationPipe } from '@nestjs/common'
 import { LoggingInterceptor } from './shared/interceptor/logging.interceptor'
 import { TransformInterceptor } from './shared/interceptor/transform.interceptor'
-import { AccessTokenGuard } from './shared/guards/access-token.guard'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -28,4 +27,4 @@ async function bootstrap() {
   )
   await app.listen(process.env.PORT ?? 3000)
 }
-bootstrap()
+void bootstrap()
