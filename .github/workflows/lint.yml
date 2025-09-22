@@ -54,17 +54,40 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: � Setup environment for linting
-        run: cp .env.example .env
+      - name: 🔧 Setup environment for linting
+        run: |
+          cp .env.example .env
+          echo "Environment file created:"
+          cat .env
 
-      - name: �🔍 Run ESLint
+      - name: 🔍 Run ESLint
         run: npm run lint:check
+        env:
+          DATABASE_URL: 'file:./dev.db'
+          ACCESS_TOKEN_SECRET: 'test-access-token-secret'
+          REFRESH_TOKEN_SECRET: 'test-refresh-token-secret'
+          ACCESS_TOKEN_EXPIRATION: '15m'
+          REFRESH_TOKEN_EXPIRATION: '7d'
+          SECRET_API_KEY: 'test-secret-api-key'
+          SALT_ROUNDS: '10'
+          PORT: '3000'
+          NODE_ENV: 'test'
 
       - name: 🎨 Check Prettier formatting
         run: npm run format:check
 
       - name: 🏗️ Check TypeScript compilation
         run: npm run build
+        env:
+          DATABASE_URL: 'file:./dev.db'
+          ACCESS_TOKEN_SECRET: 'test-access-token-secret'
+          REFRESH_TOKEN_SECRET: 'test-refresh-token-secret'
+          ACCESS_TOKEN_EXPIRATION: '15m'
+          REFRESH_TOKEN_EXPIRATION: '7d'
+          SECRET_API_KEY: 'test-secret-api-key'
+          SALT_ROUNDS: '10'
+          PORT: '3000'
+          NODE_ENV: 'test'
 
   # Job 3: Dependency security check
   security-audit:
@@ -80,13 +103,13 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: � Install dependencies
+      - name: 📦 Install dependencies
         run: npm ci
 
       - name: 🔧 Setup environment for security audit
         run: cp .env.example .env
 
-      - name: �🔍 Run security audit
+      - name: 🔍 Run security audit
         run: npm audit --audit-level=high
 
       - name: 📦 Check for outdated packages

@@ -35,16 +35,49 @@ jobs:
         run: npm ci
 
       - name: 🔧 Setup environment for testing
-        run: cp .env.example .env
+        run: |
+          cp .env.example .env
+          echo "Environment file created:"
+          cat .env
 
       - name: 🏗️ Build application
         run: npm run build
+        env:
+          DATABASE_URL: 'file:./dev.db'
+          ACCESS_TOKEN_SECRET: 'test-access-token-secret'
+          REFRESH_TOKEN_SECRET: 'test-refresh-token-secret'
+          ACCESS_TOKEN_EXPIRATION: '15m'
+          REFRESH_TOKEN_EXPIRATION: '7d'
+          SECRET_API_KEY: 'test-secret-api-key'
+          SALT_ROUNDS: '10'
+          PORT: '3000'
+          NODE_ENV: 'test'
 
       - name: 🧪 Run unit tests
         run: npm test
+        env:
+          DATABASE_URL: 'file:./dev.db'
+          ACCESS_TOKEN_SECRET: 'test-access-token-secret'
+          REFRESH_TOKEN_SECRET: 'test-refresh-token-secret'
+          ACCESS_TOKEN_EXPIRATION: '15m'
+          REFRESH_TOKEN_EXPIRATION: '7d'
+          SECRET_API_KEY: 'test-secret-api-key'
+          SALT_ROUNDS: '10'
+          PORT: '3000'
+          NODE_ENV: 'test'
 
       - name: 🧪 Run e2e tests
         run: npm run test:e2e
+        env:
+          DATABASE_URL: 'file:./dev.db'
+          ACCESS_TOKEN_SECRET: 'test-access-token-secret'
+          REFRESH_TOKEN_SECRET: 'test-refresh-token-secret'
+          ACCESS_TOKEN_EXPIRATION: '15m'
+          REFRESH_TOKEN_EXPIRATION: '7d'
+          SECRET_API_KEY: 'test-secret-api-key'
+          SALT_ROUNDS: '10'
+          PORT: '3000'
+          NODE_ENV: 'test'
 
       - name: 📊 Generate test coverage
         run: npm run test:cov
