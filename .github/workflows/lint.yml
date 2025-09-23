@@ -18,6 +18,7 @@ jobs:
   lint-commit:
     name: 📝 Lint Commit Messages
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.event_name == 'pull_request'
     steps:
       - name: 🛒 Checkout code
@@ -41,6 +42,7 @@ jobs:
   lint-code:
     name: 🧹 Lint & Format Code
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: 🛒 Checkout code
         uses: actions/checkout@v4
@@ -93,6 +95,7 @@ jobs:
   security-audit:
     name: 🔐 Security Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: 🛒 Checkout code
         uses: actions/checkout@v4
